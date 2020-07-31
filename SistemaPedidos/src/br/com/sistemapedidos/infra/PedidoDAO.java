@@ -7,9 +7,11 @@ package br.com.sistemapedidos.infra;
 
 import br.com.sistemapedidos.dominio.modelos.Pedido;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class PedidoDAO {
     
     private final String obterPorId = "SELECT * FROM pedidos WHERE id = ?;";
     private final String obterPorCliente = "SELECT * FROM pedidos WHERE id_cliente = ?;";
+    private final String salvar = "INSERT INTO pedidos(id_cliente, data) VALUES(?, ?);";
 
     public PedidoDAO() {
         this.connection = null;
@@ -108,5 +111,35 @@ public class PedidoDAO {
                 throw new RuntimeException(ex);
             }
         }   
+    }
+
+    public void salvar(Pedido pedido) {
+        PreparedStatement preparedStatement = null;
+        
+        try{
+            if(this.connection == null){
+                this.connection = ConnectionFactory.getConnection();
+            }
+            
+            preparedStatement = this.connection.prepareStatement(salvar, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, pedido.getCliente().getId());
+            preparedStatement.setDate(2, new java.sql.Date(pedido.getData().getTime()));
+            preparedStatement.execute();
+            
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            pedido.setId(resultSet.getInt(1));
+        }catch(SQLException ex){
+            throw new RuntimeException("Erro ao inserir um pedido no banco de dados. Origem = " + ex.getMessage());
+        }finally{
+            try {
+                preparedStatement.close();
+                if(closeConnection){
+                    this.connection.close();
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }

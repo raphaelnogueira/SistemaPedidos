@@ -45,4 +45,31 @@ public class Produto {
         return erros.isEmpty();
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()){
+            return false;
+        }
+        
+        if(obj == null){
+            return false;
+        }
+        
+        if(this == obj){
+            return true;
+        }
+        
+        Produto produto = (Produto)obj;
+        return this.id == produto.getId();
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.id;
+        return result;
+    }
+
+    
 }

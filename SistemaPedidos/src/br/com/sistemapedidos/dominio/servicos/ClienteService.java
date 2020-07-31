@@ -24,6 +24,14 @@ public class ClienteService {
         return clienteDAO.obterPorId(id);
     }
     
+    public Cliente obterPorCpf(String cpf){
+        Cliente cliente =  clienteDAO.obterPorCpf(cpf);
+        if(cliente == null){
+            throw new RuntimeException("Não existe cliente com cpf = " + cpf);
+        }
+        return cliente;
+    }
+    
     public List<Cliente> obterTodos(){
         return clienteDAO.obterTodos();
     }

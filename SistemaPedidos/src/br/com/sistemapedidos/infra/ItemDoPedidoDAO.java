@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class ItemDoPedidoDAO {
     
     private final String obterPorPedido = "SELECT * FROM item_do_pedido WHERE id_pedido = ?;";
     private final String obterPorProduto = "SELECT * FROM item_do_pedido WHERE id_pedido = ?;";
+    private final String salvar = "INSERT INTO item_do_pedido(id_pedido, id_produto, quantidade) VALUES(?, ?, ?);";
 
     public ItemDoPedidoDAO() {
         this.connection = null;
@@ -111,5 +113,32 @@ public class ItemDoPedidoDAO {
                 throw new RuntimeException(ex);
             }
         }   
+    }
+
+    public void salvar(ItemDoPedido item, int idPedido) {
+        PreparedStatement preparedStatement = null;
+        
+        try{
+            if(this.connection == null || this.connection.isClosed()){
+                this.connection = ConnectionFactory.getConnection();
+            }
+            
+            preparedStatement = this.connection.prepareStatement(salvar);
+            preparedStatement.setInt(1, idPedido);
+            preparedStatement.setInt(2, item.getProduto().getId());
+            preparedStatement.setInt(3, item.getQuantidade());
+            preparedStatement.execute();
+        }catch(SQLException ex){
+            throw new RuntimeException("Erro ao inserir um item do pedido no banco de dados. Origem = " + ex.getMessage());
+        }finally{
+            try {
+                preparedStatement.close();
+                if(closeConnection){
+                    this.connection.close();
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }
