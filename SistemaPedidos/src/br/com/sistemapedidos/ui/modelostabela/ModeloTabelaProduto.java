@@ -5,7 +5,7 @@
  */
 package br.com.sistemapedidos.ui.modelostabela;
 
-import br.com.sistemapedidos.dominio.modelos.Cliente;
+import br.com.sistemapedidos.dominio.modelos.Produto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -14,15 +14,15 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author raphael
  */
-public class ModeloTabelaCliente extends AbstractTableModel {
-    private String[] colunas = new String[]{"id","Nome", "cpf"};
-    private List<Cliente> lista = new ArrayList();
+public class ModeloTabelaProduto extends AbstractTableModel {
+    private String[] colunas = new String[]{"id", "Descrição"};
+    private List<Produto> lista = new ArrayList();
     
-    public ModeloTabelaCliente(List<Cliente> lista){
+    public ModeloTabelaProduto(List<Produto> lista){
         this.lista = lista;
     }
 
-    public ModeloTabelaCliente(){
+    public ModeloTabelaProduto(){
     }
 
     @Override
@@ -47,45 +47,44 @@ public class ModeloTabelaCliente extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Cliente cliente = lista.get(rowIndex);
+        Produto produto = lista.get(rowIndex);
         
         switch(columnIndex){
-            case 0: return cliente.getId();
-            case 1: return cliente.getNomeCompleto();
-            case 2: return cliente.getCpf();
+            case 0: return produto.getId();
+            case 1: return produto.getDescricao();
             default: return null;
         }
     }
 
     @Override
     public void setValueAt(Object value, int row, int col) {
-        Cliente cliente = lista.get(row);
+        Produto produto = lista.get(row);
         switch (col) {
             case 0:
-                cliente.setId((int) value); //if column 0 (code)
+                produto.setId((int) value); //if column 0 (code)
                 break;
-            case 2:
-                cliente.setCpf((String) value);
+            case 1:
+                produto.setDescricao((String) value);
                 break;
             default:
         }
         this.fireTableCellUpdated(row, col);
     }    
     
-    public boolean removeCliente(Cliente cliente) {
-        int linha = this.lista.indexOf(cliente);
-        boolean result = this.lista.remove(cliente);
+    public boolean removeProduto(Produto produto) {
+        int linha = this.lista.indexOf(produto);
+        boolean result = this.lista.remove(produto);
         this.fireTableRowsDeleted(linha,linha);//update JTable
         return result;
     }
 
-    public void adicionaCliente(Cliente cliente) {
-        this.lista.add(cliente);
+    public void adicionaProduto(Produto produto) {
+        this.lista.add(produto);
         this.fireTableRowsInserted(lista.size() - 1, lista.size() - 1);
     }
 
-    public void setListaClientes(List<Cliente> clientes) {
-        this.lista = clientes;
+    public void setListaProdutos(List<Produto> produtos) {
+        this.lista = produtos;
         this.fireTableDataChanged();
     }
 
@@ -97,7 +96,7 @@ public class ModeloTabelaCliente extends AbstractTableModel {
         this.fireTableRowsDeleted(0,indice);//update JTable
     }
 
-    public Cliente getCliente(int linha){
+    public Produto getProduto(int linha){
         return lista.get(linha);
     }
 }
