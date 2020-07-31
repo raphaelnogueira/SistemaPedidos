@@ -9,6 +9,7 @@ import br.com.sistemapedidos.dominio.modelos.Cliente;
 import br.com.sistemapedidos.dominio.servicos.ClienteService;
 import br.com.sistemapedidos.ui.modelostabela.ModeloTabelaCliente;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public class ManterClientes extends javax.swing.JFrame {
     private ModeloTabelaCliente modeloTabela = new ModeloTabelaCliente();
+    private int linhaClicada = -1;
 
     /**
      * Creates new form ManterClientes
@@ -35,6 +37,15 @@ public class ManterClientes extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaClientes = new javax.swing.JTable();
+        labelNome = new javax.swing.JLabel();
+        txtNome = new javax.swing.JTextField();
+        labelSobrenome = new javax.swing.JLabel();
+        txtSobrenome = new javax.swing.JTextField();
+        labelCpf = new javax.swing.JLabel();
+        btnCriar = new javax.swing.JButton();
+        btnAtualizar = new javax.swing.JButton();
+        btnExcluir = new javax.swing.JButton();
+        txtCpf = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -44,23 +55,92 @@ public class ManterClientes extends javax.swing.JFrame {
         });
 
         tabelaClientes.setModel(modeloTabela);
+        tabelaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelaClientesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabelaClientes);
+
+        labelNome.setText("Nome:");
+
+        labelSobrenome.setText("Sobrenome:");
+
+        labelCpf.setText("CPF:");
+
+        btnCriar.setText("Criar");
+        btnCriar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCriarMouseClicked(evt);
+            }
+        });
+
+        btnAtualizar.setText("Atualizar");
+        btnAtualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAtualizarMouseClicked(evt);
+            }
+        });
+
+        btnExcluir.setText("Excluir");
+        btnExcluir.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnExcluirMouseClicked(evt);
+            }
+        });
+
+        try {
+            txtCpf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                    .addComponent(labelNome)
+                    .addComponent(labelSobrenome)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(labelCpf)
+                            .addComponent(txtSobrenome)
+                            .addComponent(txtCpf, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                        .addGap(66, 66, 66)
+                        .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAtualizar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelNome)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(labelSobrenome)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtSobrenome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelCpf)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCriar)
+                    .addComponent(btnAtualizar)
+                    .addComponent(btnExcluir)
+                    .addComponent(txtCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
@@ -71,6 +151,76 @@ public class ManterClientes extends javax.swing.JFrame {
         List<Cliente> clientes = clienteService.obterTodos();
         modeloTabela.setListaClientes(clientes);
     }//GEN-LAST:event_formWindowOpened
+
+    private void tabelaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaClientesMouseClicked
+        linhaClicada = tabelaClientes.rowAtPoint(evt.getPoint());
+        Cliente cliente = modeloTabela.getCliente(linhaClicada);
+        //Seta os dados nos componentes
+        txtNome.setText(cliente.getNome());
+        txtSobrenome.setText(cliente.getSobrenome());
+        txtCpf.setText(cliente.getCpf());
+    }//GEN-LAST:event_tabelaClientesMouseClicked
+
+    private void btnCriarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCriarMouseClicked
+        Cliente cliente = new Cliente();
+        
+        cliente.setNome(txtNome.getText());
+        cliente.setSobrenome(txtSobrenome.getText());
+        cliente.setCpf(txtCpf.getText());
+ 
+        try {
+            ClienteService clienteService = new ClienteService();
+            clienteService.salvar(cliente);
+            modeloTabela.adicionaCliente(cliente);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        txtNome.setText("");
+        txtSobrenome.setText("");
+        txtCpf.setText("");
+        tabelaClientes.clearSelection();
+    }//GEN-LAST:event_btnCriarMouseClicked
+
+    private void btnExcluirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExcluirMouseClicked
+        Cliente cliente = modeloTabela.getCliente(linhaClicada);
+        
+        try {
+            ClienteService clienteService = new ClienteService();
+            clienteService.excluir(cliente);
+            modeloTabela.removeCliente(cliente);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        txtNome.setText("");
+        txtSobrenome.setText("");
+        txtCpf.setText("");
+        tabelaClientes.clearSelection();
+    }//GEN-LAST:event_btnExcluirMouseClicked
+
+    private void btnAtualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtualizarMouseClicked
+        if(linhaClicada!=-1){
+            Cliente cliente = modeloTabela.getCliente(linhaClicada);
+            
+            cliente.setNome(txtNome.getText());
+            cliente.setSobrenome(txtSobrenome.getText());
+            cliente.setCpf(txtCpf.getText());
+            
+            try {
+                ClienteService clienteService = new ClienteService();
+                clienteService.atualizar(cliente);
+                modeloTabela.fireTableRowsUpdated(linhaClicada, linhaClicada);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            txtNome.setText("");
+            txtSobrenome.setText("");
+            txtCpf.setText("");
+            tabelaClientes.clearSelection();
+        }
+    }//GEN-LAST:event_btnAtualizarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -108,7 +258,16 @@ public class ManterClientes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAtualizar;
+    private javax.swing.JButton btnCriar;
+    private javax.swing.JButton btnExcluir;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelCpf;
+    private javax.swing.JLabel labelNome;
+    private javax.swing.JLabel labelSobrenome;
     private javax.swing.JTable tabelaClientes;
+    private javax.swing.JFormattedTextField txtCpf;
+    private javax.swing.JTextField txtNome;
+    private javax.swing.JTextField txtSobrenome;
     // End of variables declaration//GEN-END:variables
 }
