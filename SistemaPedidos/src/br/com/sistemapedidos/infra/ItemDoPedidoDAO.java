@@ -23,6 +23,7 @@ public class ItemDoPedidoDAO {
     private final boolean closeConnection;
     
     private final String obterPorPedido = "SELECT * FROM item_do_pedido WHERE id_pedido = ?;";
+    private final String obterPorProduto = "SELECT * FROM item_do_pedido WHERE id_pedido = ?;";
 
     public ItemDoPedidoDAO() {
         this.connection = null;
@@ -46,6 +47,45 @@ public class ItemDoPedidoDAO {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(obterPorPedido);
             preparedStatement.setLong(1, idPedido);
+            resultSet = preparedStatement.executeQuery();
+            List<ItemDoPedido> itens = new ArrayList<>();
+            while(resultSet.next()){
+                ItemDoPedido itemDoPedido = new ItemDoPedido();
+                itemDoPedido.setQuantidade(resultSet.getInt("quantidade"));
+                
+                ProdutoDAO produtoDAO = new ProdutoDAO(connection);
+                Produto produto = produtoDAO.obterPorId(resultSet.getInt("id_produto"));
+                itemDoPedido.setProduto(produto);
+                itens.add(itemDoPedido);
+            }
+            return itens;
+        }catch(SQLException ex){
+            throw new RuntimeException("Erro ao consultar um produto no banco de dados. Origem = " + ex.getMessage());            
+        }finally{
+            try {
+                resultSet.close();
+                preparedStatement.close();
+                if(this.closeConnection){
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }   
+    }
+    
+    public List<ItemDoPedido> obterPorProduto(int idProduto) {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        
+        try {
+            if(this.connection == null){
+                this.connection = ConnectionFactory.getConnection();
+            }
+            
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(obterPorProduto);
+            preparedStatement.setLong(1, idProduto);
             resultSet = preparedStatement.executeQuery();
             List<ItemDoPedido> itens = new ArrayList<>();
             while(resultSet.next()){
