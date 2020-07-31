@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,9 +25,11 @@ public class ClienteDAO {
     private final boolean closeConnection;
     
     private final String obterPorId = "SELECT * FROM clientes WHERE id = ?;";
+    private final String obterPorCpf = "SELECT * FROM clientes WHERE cpf = ?;";
     private final String excluir = "DELETE FROM clientes WHERE id = ?;";
     private final String atualizar = "UPDATE clientes SET  nome = ?, sobrenome = ?, cpf = ? WHERE id = ?;";
     private final String obterTodos = "SELECT * FROM clientes;";
+    private final String salvar = "INSERT INTO clientes(nome, sobrenome, cpf) VALUES(?, ?, ?);";
 
     public ClienteDAO() {
         this.connection = null;
@@ -48,6 +51,44 @@ public class ClienteDAO {
             }
             preparedStatement = this.connection.prepareStatement(obterPorId);
             preparedStatement.setLong(1, id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                Cliente cliente = new Cliente();
+                cliente.setId(resultSet.getInt("id"));
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setSobrenome(resultSet.getString("sobrenome"));
+                cliente.setCpf(resultSet.getString("cpf"));
+                PedidoDAO pedidoDAO = new PedidoDAO(this.connection);
+                cliente.setPedidos(pedidoDAO.obterPorCliente(cliente.getId()));
+                return cliente;
+            }else{
+                return null;
+            }
+        }catch(SQLException ex){
+            throw new RuntimeException("Erro ao consultar um cliente no banco de dados. Origem = " + ex.getMessage());            
+        }finally{
+            try {
+                resultSet.close();
+                preparedStatement.close();
+                if(this.closeConnection){
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }   
+    }
+    
+    public Cliente obterPorCpf(String cpf) {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        
+        try {
+            if(this.connection == null){
+                this.connection = ConnectionFactory.getConnection();
+            }
+            preparedStatement = this.connection.prepareStatement(obterPorCpf);
+            preparedStatement.setString(1, cpf);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){
                 Cliente cliente = new Cliente();
@@ -124,13 +165,13 @@ public class ClienteDAO {
             preparedStatement = this.connection.prepareStatement(obterTodos);
             resultSet = preparedStatement.executeQuery();
             List<Cliente> clientes = new ArrayList<>();
+            PedidoDAO pedidoDAO = new PedidoDAO(this.connection);
             while (resultSet.next()) {        
                 Cliente cliente = new Cliente();
                 cliente.setId(resultSet.getInt("id"));
                 cliente.setNome(resultSet.getString("nome"));
                 cliente.setSobrenome(resultSet.getString("sobrenome"));
                 cliente.setCpf(resultSet.getString("cpf"));
-                PedidoDAO pedidoDAO = new PedidoDAO(this.connection);
                 cliente.setPedidos(pedidoDAO.obterPorCliente(cliente.getId()));
                 clientes.add(cliente);
             }
@@ -159,6 +200,7 @@ public class ClienteDAO {
             preparedStatement.setString(1, cliente.getNome());
             preparedStatement.setString(2, cliente.getSobrenome());
             preparedStatement.setString(3, cliente.getCpf());
+            preparedStatement.setInt(4, cliente.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -192,4 +234,33 @@ public class ClienteDAO {
         }
     }
     
+    public void salvar(Cliente cliente) {
+        PreparedStatement preparedStatement = null;
+        
+        try{
+            if(this.connection == null || connection.isClosed()){
+                this.connection = ConnectionFactory.getConnection();
+            }
+            preparedStatement = this.connection.prepareStatement(salvar, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, cliente.getNome());
+            preparedStatement.setString(2, cliente.getSobrenome());
+            preparedStatement.setString(3, cliente.getCpf());
+            preparedStatement.execute();
+            
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            cliente.setId(resultSet.getInt(1));
+        }catch(SQLException ex){
+            throw new RuntimeException("Erro ao inserir um cliente no banco de dados. Origem = " + ex.getMessage());
+        }finally{
+            try {
+                preparedStatement.close();
+                if(closeConnection){
+                    this.connection.close();
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
 }

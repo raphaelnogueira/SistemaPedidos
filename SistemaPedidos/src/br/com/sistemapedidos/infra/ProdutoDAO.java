@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -149,7 +150,8 @@ public class ProdutoDAO {
             if(this.connection == null){
                 this.connection = ConnectionFactory.getConnection();
             }
-            preparedStatement = this.connection.prepareStatement(salvar);
+            
+            preparedStatement = this.connection.prepareStatement(salvar, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, produto.getDescricao());
             preparedStatement.execute();
             
@@ -179,6 +181,7 @@ public class ProdutoDAO {
             }
             preparedStatement = this.connection.prepareStatement(atualizar);
             preparedStatement.setString(1, produto.getDescricao());
+            preparedStatement.setInt(2, produto.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);

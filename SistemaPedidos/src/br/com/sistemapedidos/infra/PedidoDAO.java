@@ -84,13 +84,13 @@ public class PedidoDAO {
             preparedStatement.setLong(1, idCliente);
             resultSet = preparedStatement.executeQuery();
             List<Pedido> pedidos = new ArrayList<>();
+            ClienteDAO clienteDAO = new ClienteDAO(connection);
             while(resultSet.next()){
                 Pedido pedido = new Pedido();
                 pedido.setId(resultSet.getInt("id"));
                 pedido.setData(resultSet.getDate("data"));
                 ItemDoPedidoDAO itemDoPedidoDAO = new ItemDoPedidoDAO(this.connection);
                 pedido.setItens(itemDoPedidoDAO.obterPorPedido(pedido.getId()));
-                ClienteDAO clienteDAO = new ClienteDAO(connection);
                 pedido.setCliente(clienteDAO.obterPorIdSemPedidos(resultSet.getInt("id_cliente")));
                 pedidos.add(pedido);
             }
