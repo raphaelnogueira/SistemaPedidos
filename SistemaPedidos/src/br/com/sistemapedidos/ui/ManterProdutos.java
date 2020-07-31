@@ -6,21 +6,25 @@
 package br.com.sistemapedidos.ui;
 
 import br.com.sistemapedidos.dominio.modelos.Cliente;
+import br.com.sistemapedidos.dominio.modelos.Produto;
 import br.com.sistemapedidos.dominio.servicos.ClienteService;
-import br.com.sistemapedidos.ui.modelostabela.ModeloTabelaCliente;
+import br.com.sistemapedidos.dominio.servicos.ProdutoService;
+import br.com.sistemapedidos.ui.modelostabela.ModeloTabelaProduto;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author raphael
  */
-public class ManterClientes extends javax.swing.JFrame {
-    private ModeloTabelaCliente modeloTabela = new ModeloTabelaCliente();
+public class ManterProdutos extends javax.swing.JFrame {
+    private ModeloTabelaProduto modeloTabela = new ModeloTabelaProduto();
+    private int linhaClicada = -1;
 
     /**
      * Creates new form ManterClientes
      */
-    public ManterClientes() {
+    public ManterProdutos() {
         initComponents();
     }
 
@@ -34,7 +38,12 @@ public class ManterClientes extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tabelaClientes = new javax.swing.JTable();
+        tabelaProdutos = new javax.swing.JTable();
+        labelDescricao = new javax.swing.JLabel();
+        txtDescricao = new javax.swing.JTextField();
+        btnCriar = new javax.swing.JButton();
+        btnAtualizar = new javax.swing.JButton();
+        btnExcluir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -43,34 +52,139 @@ public class ManterClientes extends javax.swing.JFrame {
             }
         });
 
-        tabelaClientes.setModel(modeloTabela);
-        jScrollPane1.setViewportView(tabelaClientes);
+        tabelaProdutos.setModel(modeloTabela);
+        tabelaProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelaProdutosMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tabelaProdutos);
+
+        labelDescricao.setText("Descrição");
+
+        btnCriar.setText("Criar");
+        btnCriar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCriarMouseClicked(evt);
+            }
+        });
+
+        btnAtualizar.setText("Atualizar");
+        btnAtualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAtualizarMouseClicked(evt);
+            }
+        });
+
+        btnExcluir.setText("Excluir");
+        btnExcluir.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnExcluirMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelDescricao)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAtualizar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelDescricao)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnCriar)
+                        .addComponent(btnAtualizar)
+                        .addComponent(btnExcluir)))
+                .addContainerGap(151, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        ClienteService clienteService = new ClienteService();
-        List<Cliente> clientes = clienteService.obterTodos();
-        modeloTabela.setListaClientes(clientes);
+        ProdutoService produtoService = new ProdutoService();
+        List<Produto> produtos = produtoService.obterTodos();
+        modeloTabela.setListaProdutos(produtos);
     }//GEN-LAST:event_formWindowOpened
+
+    private void tabelaProdutosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaProdutosMouseClicked
+        linhaClicada = tabelaProdutos.rowAtPoint(evt.getPoint());
+        Produto produto = modeloTabela.getProduto(linhaClicada);
+        //Seta os dados nos componentes
+        txtDescricao.setText(produto.getDescricao());
+    }//GEN-LAST:event_tabelaProdutosMouseClicked
+
+    private void btnCriarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCriarMouseClicked
+        Produto produto = new Produto();
+        
+        produto.setDescricao(txtDescricao.getText());
+ 
+        try {
+            ProdutoService produtoService = new ProdutoService();
+            produtoService.salvar(produto);
+            modeloTabela.adicionaProduto(produto);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        txtDescricao.setText("");
+        tabelaProdutos.clearSelection();
+    }//GEN-LAST:event_btnCriarMouseClicked
+
+    private void btnExcluirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExcluirMouseClicked
+        Produto produto = modeloTabela.getProduto(linhaClicada);
+        
+        try {
+            ProdutoService produtoService = new ProdutoService();
+            produtoService.excluir(produto);
+            modeloTabela.removeProduto(produto);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        txtDescricao.setText("");
+        tabelaProdutos.clearSelection();
+    }//GEN-LAST:event_btnExcluirMouseClicked
+
+    private void btnAtualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtualizarMouseClicked
+        if(linhaClicada!=-1){
+            Produto produto = modeloTabela.getProduto(linhaClicada);
+            
+            produto.setDescricao(txtDescricao.getText());
+            
+            try {
+                ProdutoService produtoService = new ProdutoService();
+                produtoService.atualizar(produto);
+                modeloTabela.fireTableRowsUpdated(linhaClicada, linhaClicada);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            txtDescricao.setText("");
+            tabelaProdutos.clearSelection();
+        }
+    }//GEN-LAST:event_btnAtualizarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -89,26 +203,32 @@ public class ManterClientes extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ManterClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManterProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ManterClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManterProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ManterClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManterProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ManterClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManterProdutos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ManterClientes().setVisible(true);
+                new ManterProdutos().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAtualizar;
+    private javax.swing.JButton btnCriar;
+    private javax.swing.JButton btnExcluir;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tabelaClientes;
+    private javax.swing.JLabel labelDescricao;
+    private javax.swing.JTable tabelaProdutos;
+    private javax.swing.JTextField txtDescricao;
     // End of variables declaration//GEN-END:variables
 }
