@@ -34,7 +34,7 @@ public class ClienteService {
             return;
         }
         
-        throw new RuntimeException("O cliente não pode ser exlcuido pois possui pedidos.");
+        throw new RuntimeException("O cliente não pode ser excluido pois possui pedidos.");
     }
     
     public void atualizar(Cliente cliente){
@@ -42,6 +42,19 @@ public class ClienteService {
             throw new RuntimeException("Não é possível exlcuir um cliente nulo.");
         }
         clienteDAO.atualizar(cliente);
+    }
+    
+    public void salvar(Cliente cliente){
+        if(clienteDAO.obterPorCpf(cliente.getCpf()) != null){
+            throw new RuntimeException("Já existe um cliente com o cpf = " + cliente.getCpf());
+        }
+        
+        if(cliente.valido()){
+            clienteDAO.salvar(cliente);
+            return;
+        }
+        
+        throw new RuntimeException("Não é possível salvar um cliente inválido.\n" + String.join("\n", cliente.getErros()));
     }
     
 }
