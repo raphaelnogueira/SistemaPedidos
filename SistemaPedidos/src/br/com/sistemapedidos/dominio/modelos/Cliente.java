@@ -5,6 +5,7 @@
  */
 package br.com.sistemapedidos.dominio.modelos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class Cliente {
     private String sobrenome;
     private String cpf;
     private List<Pedido> pedidos;
+    private ArrayList<String> erros;
 
     public int getId() {
         return id;
@@ -57,8 +59,29 @@ public class Cliente {
     public List<Pedido> getPedidos() {
         return pedidos;
     }
+    
+    public ArrayList<String> getErros(){
+        return this.erros;
+    }
 
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
-    } 
+    }
+    
+    public boolean valido(){
+        erros = new ArrayList<>();
+        if(this.nome.length() < 2){
+            erros.add("O nome deve ter mais de 2 caracteres");
+        }
+        
+        if(this.sobrenome.length() < 2){
+            erros.add("O sobrenome deve ter mais de 2 caracteres");
+        }
+        
+        if(this.cpf.length() != 14){
+            erros.add("O cpf deve ter 14 caracteres");
+        }
+        
+        return erros.isEmpty();
+    }
 }
