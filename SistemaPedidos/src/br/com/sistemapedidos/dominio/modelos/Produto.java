@@ -5,6 +5,8 @@
  */
 package br.com.sistemapedidos.dominio.modelos;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author raphael
@@ -12,6 +14,7 @@ package br.com.sistemapedidos.dominio.modelos;
 public class Produto {
     private int id;
     private String descricao;
+    private ArrayList<String> erros;
 
     public int getId() {
         return id;
@@ -29,6 +32,17 @@ public class Produto {
         this.descricao = descricao;
     }
     
+    public ArrayList<String> getErros(){
+        return this.erros;
+    }
     
+    public boolean valido(){
+        erros = new ArrayList<>();
+        if(this.descricao.length() == 10){
+            erros.add("A descrção do produto deve ter pelo menos 10 caracteres.");
+        }
+        
+        return erros.isEmpty();
+    }
     
 }
