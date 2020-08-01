@@ -70,11 +70,19 @@ public class Cliente {
     
     public boolean valido(){
         erros = new ArrayList<>();
-        if(this.nome.length() < 2){
+        if(this.nome == null){
+            erros.add("O nome é obrigatório");
+        }
+        
+        if(this.nome != null && this.nome.length() < 2){
             erros.add("O nome deve ter mais de 2 caracteres");
         }
         
-        if(this.sobrenome.length() < 2){
+        if(this.sobrenome == null){
+            erros.add("O sobrenome é obrigatório");
+        }
+        
+        if(this.sobrenome != null && this.sobrenome.length() < 2){
             erros.add("O sobrenome deve ter mais de 2 caracteres");
         }
         

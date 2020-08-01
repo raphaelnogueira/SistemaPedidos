@@ -49,9 +49,5 @@ public class Pedido {
 
     public void setItens(List<ItemDoPedido> itens) {
         this.itens = itens;
-    }    
-
-    public void setData(Calendar cal) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

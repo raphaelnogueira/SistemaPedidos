@@ -38,7 +38,7 @@ public class Produto {
     
     public boolean valido(){
         erros = new ArrayList<>();
-        if(this.descricao.length() == 10){
+        if(this.descricao.length() < 10){
             erros.add("A descrção do produto deve ter pelo menos 10 caracteres.");
         }
         
